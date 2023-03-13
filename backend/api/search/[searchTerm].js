@@ -21,6 +21,7 @@ export default async function handler(req, res) {
             name: 1,
             association: 1,
             fpa_id: 1,
+            acronym: 1,
             _id: {
               $toString: "$_id",
             },
