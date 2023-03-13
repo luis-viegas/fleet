@@ -7,6 +7,7 @@ export default function ClubScreen() {
   const {
     params: { club },
   } = useRoute();
+  console.log(club);
   return (
     <SafeAreaView>
       <View className="px-12 mt-12 items-center">
