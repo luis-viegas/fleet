@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../../connectToDatabase";
+import { connectToDatabase } from "../../../connectToDatabase";
 import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const athletes = db.collection("Athletes");
 
   const data = await athletes.findOne(
-    { _id: new ObjectId(params.id) },
+    { fpa_id: req.query.id },
     {
       _id: {
         $toString: "$_id",
@@ -17,5 +17,5 @@ export default async function handler(req, res) {
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
-  res.json({ athlete: JSON.parse(JSON.stringify(data)) });
+  res.json(JSON.parse(JSON.stringify(data)));
 }
