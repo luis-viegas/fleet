@@ -3,6 +3,7 @@ from urllib.request import Request, urlopen
 import re
 
 from Nationalities import Nationalities
+from Web_Browser import get_webpage
 
 fpa_url = "http://127.0.0.1:5501"
 
@@ -58,3 +59,14 @@ class Athlete:
         association = re.search(r'Associação : (\w+)', info.text).group(1)
 
         return Athlete(name, club, level, birth_year, gender , nationality, association, fpa_id=id)
+
+
+    def get_competitions(self):
+        fpa_url = "https://fpacompeticoes.pt"
+
+        results_soup = get_webpage(f"perfilAtleta/{self.fpa_id}")
+
+        result = results_soup.find('div', id='ultimas').findAll('tr')[1:]
+
+        return result
+

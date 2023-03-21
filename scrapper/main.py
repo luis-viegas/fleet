@@ -13,9 +13,10 @@ def main():
     clubsDB = client["Database"]["Clubs"]
     athletesDB = client["Database"]["Athletes"]
     eventsDB = client["Database"]["Events"]
+    athleteCompetitionsDB = client["Database"]["AthleteCompetitions"]
 
-    athletesDB.update_many({}, {"$set": {"competitions": []}})
 
+    athletesDB.update_many({}, {'$unset': {'competitions': 1}})
 
 
 

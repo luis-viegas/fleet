@@ -1,3 +1,4 @@
+from Athlete import Athlete
 from Club import Club
 from urllib.request import Request, urlopen
 from pymongo import MongoClient
@@ -6,26 +7,21 @@ import time
 import random
 
 from Event import Event
+from Web_Browser import get_webpage
 
 
 def main():
-
-
-
-    client = MongoClient("mongodb+srv://admin:bananasplit2023@cluster0.7wg412l.mongodb.net/?retryWrites=true&w=majority")
+    client = MongoClient(
+        "mongodb+srv://admin:bananasplit2023@cluster0.7wg412l.mongodb.net/?retryWrites=true&w=majority")
     clubsDB = client["Database"]["Clubs"]
     athletesDB = client["Database"]["Athletes"]
     eventsDB = client["Database"]["Events"]
+    athleteCompetitionsDB = client["Database"]["AthleteCompetitions"]
 
-    for i in range(1, 1967):
-        crawl_event_url(i, eventsDB)
-        time.sleep(random.randint(1, 2))
-
-    # crawl_homepage_events(eventsDB)
-
-
+    crawl_DB_athletes(athletesDB, athleteCompetitionsDB)
 
     client.close()
+
 
 def crawl_homepage_events(eventsDB):
     fpa_url = "https://fpacompeticoes.pt"
@@ -56,6 +52,7 @@ def crawl_homepage_events(eventsDB):
             event.competitions.append(competition.__dict__)
         eventsDB.update_one({"fpa_id": event_id}, {"$set": event.__dict__}, upsert=True)
 
+
 def crawl_event_url(event_id, eventsDB):
     try:
         event = Event.from_fpa_url(event_id)
@@ -78,6 +75,7 @@ def crawl_clubs(clubsDB):
         print(i)
         sleep_time = random.randint(1, 7)
         time.sleep(sleep_time)
+
 
 def crawl_club_athletes(clubsDB, athletesDB, club_id):
     athletes = Club.fpa_club_athletes(club_id, debug=False)
@@ -108,6 +106,38 @@ def write_progress(progress):
     with open("progress.txt", "a") as f:
         f.write(progress)
         f.write("\n")
+
+
+def crawl_DB_athletes(athletesDB, athletesCompetitionsDB):
+    for athlete in athletesDB.find():
+        fpa_id = athlete["fpa_id"]
+        athlete_dict = {}
+        fpa_athlete = Athlete.from_fpa_url(fpa_id, debug=False)
+        competitions = fpa_athlete.get_competitions()
+        for comp in competitions:
+            comp_id = comp.find('a').attrs['href'].split('/')[1]
+            comp_score = comp.findAll('td')[1].text.strip()
+            comp_position = comp.findAll('td')[2].text.strip()
+            comp_soup = get_webpage(f"{comp_id}/resultados")
+            event_id = comp_soup.find('div', id='botaoreturn').find('a').attrs['href'].split('/')[1]
+            athlete_dict[comp_id] = [event_id, comp_score, comp_position]
+
+        athlete_competitions = athletesCompetitionsDB.find_one({"fpa_id": str(fpa_id)})
+
+        result = []
+        for item in athlete_competitions["competitions"]:
+            event_id = item["event_id"]
+            comp_score = item["score"]
+            comp_position = item["position"]
+            for key in athlete_dict.keys():
+                value = athlete_dict[key]
+                if value[0] == str(event_id) and value[1] == comp_score and value[2] == comp_position:
+                    item["competition_id"] = key
+                    result.append(item)
+                    break
+
+        print(result)
+        athletesCompetitionsDB.update_one({"fpa_id": fpa_id}, {"$set": athlete_competitions.__dict__}, upsert=True)
 
 
 if __name__ == "__main__":
