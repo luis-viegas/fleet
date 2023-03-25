@@ -133,8 +133,5 @@ class Competition:
         startlist = Competition.get_startlist(id)
         results = Competition.get_results(id)
 
-
-
-
-
         return Competition(name,round,startTime,level,gender,sorted(registered,key= lambda e : e[1]),startlist,results,event_id, event_name, id)
+

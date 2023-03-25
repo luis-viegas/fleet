@@ -17,8 +17,9 @@ def main():
     athletesDB = client["Database"]["Athletes"]
     eventsDB = client["Database"]["Events"]
     athleteCompetitionsDB = client["Database"]["AthleteCompetitions"]
+    print("Connected to DB")
 
-    crawl_DB_athletes(athletesDB, athleteCompetitionsDB)
+    crawl_DB_athletes_competition_type(athletesDB, athleteCompetitionsDB)
 
     client.close()
 
@@ -108,7 +109,7 @@ def write_progress(progress):
         f.write("\n")
 
 
-def crawl_DB_athletes(athletesDB, athletesCompetitionsDB):
+def crawl_DB_athletes(athletesDB, athletesCompetitionsDB): #Crawl DB athletes and add them the competition ID
     for athlete in athletesDB.find():
         fpa_id = athlete["fpa_id"]
         athlete_dict = {}
@@ -138,6 +139,48 @@ def crawl_DB_athletes(athletesDB, athletesCompetitionsDB):
 
         print(result)
         athletesCompetitionsDB.update_one({"fpa_id": fpa_id}, {"$set": athlete_competitions.__dict__}, upsert=True)
+
+
+def competition_entry_athlete_page(soup):
+    type = soup.findAll('td')[0].text.strip()
+    score = soup.findAll('td')[1].text.strip()
+    position = soup.findAll('td')[2].text.strip()
+    club = soup.findAll('td')[3].text.strip()
+    date = soup.findAll('td')[4].text.strip()
+    id = soup.find('a').attrs['href'].split('/')[1]
+    return {"type": type, "score": score, "position": position, "club": club, "date": date, "id": id}
+
+def crawl_DB_athletes_competition_type(athletesDB, athletesCompetitionsDB):  # Crawl DB athletes and add them the competition type
+    i = 0
+    for athlete in athletesDB.find():
+        fpa_id = athlete["fpa_id"]
+        try:
+            athlete_dict = {}
+            fpa_athlete = Athlete.from_fpa_url(fpa_id, debug=False)
+            competitions = fpa_athlete.get_competitions()
+
+            athlete_page_competitions = {}
+            for comp in competitions:
+                temp = competition_entry_athlete_page(comp)
+                athlete_page_competitions[temp["id"]] = temp
+
+            athlete_competitions = athletesCompetitionsDB.find_one({"fpa_id": str(fpa_id)})
+
+
+            new_competitions = []
+            for comp in athlete_competitions["competitions"]:
+                competition_id = comp["competition_id"]
+                comp["event_type"] = athlete_page_competitions[competition_id]["type"]
+                new_competitions.append(comp)
+
+
+            print(new_competitions)
+            athletesCompetitionsDB.update_one({"fpa_id": str(fpa_id)}, {"$set": {"competitions": new_competitions}}, upsert=True)
+            print(i)
+            i = i+1
+        except:
+            write_progress(str(fpa_id))
+
 
 
 if __name__ == "__main__":
