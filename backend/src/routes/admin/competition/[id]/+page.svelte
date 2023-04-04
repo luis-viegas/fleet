@@ -77,7 +77,7 @@
 				{#each serie as result}
 					<a
 						class="inline-block  border p-6  hover:bg-gray-100 hover:cursor-pointer"
-						href="/admin/athlete/"
+						href="/admin/athlete/{result[0]}"
 					>
 						<AthleteCard id={result[0]} />
 						<p>{result[1]}</p>
