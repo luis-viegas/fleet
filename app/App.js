@@ -3,15 +3,15 @@ import { Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/HomeScreen";
-
-const Stack = createNativeStackNavigator();
+import Tabs from "./navigation/Tabs";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-      </Stack.Navigator>
+      <SafeAreaProvider>
+        <Tabs />
+      </SafeAreaProvider>
     </NavigationContainer>
   );
 }

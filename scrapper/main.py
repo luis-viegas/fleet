@@ -14,9 +14,16 @@ def main():
     athletesDB = client["Database"]["Athletes"]
     eventsDB = client["Database"]["Events"]
     athleteCompetitionsDB = client["Database"]["AthleteCompetitions"]
+    competitionsDB = client["Database"]["Competitions"]
+
+    i=0
+    for club in clubsDB.find():
+        i = i + 1
+        clubsDB.update_one({"fpa_id": club["fpa_id"]}, {"$set": {"profile_pic": ""}})
+        print(i)
+    return
 
 
-    athletesDB.update_many({}, {'$unset': {'competitions': 1}})
 
 
 

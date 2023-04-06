@@ -10,73 +10,89 @@ import {
 import React, { useEffect } from "react";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 import { useRoute } from "@react-navigation/native";
-
+import api_url from "../constants/api_url";
 import AthleteCard from "../components/AthleteCard";
 
 export default function ClubScreen() {
   const {
-    params: { club },
+    params: { fpa_id },
   } = useRoute();
 
-  const loadingArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-  const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState({ athletes: [] });
   const [loading, setLoading] = React.useState(true);
+  const [inputText, setInputText] = React.useState("");
+
+  const filteredData = data.athletes.filter((el) => {
+    if (inputText === "") {
+      return el;
+    } else {
+      return el.name.toLowerCase().includes(inputText);
+    }
+  });
+
+  let inputHandler = (e) => {
+    //convert input text to lower case
+    var lowerCase = e.toLowerCase();
+    setInputText(lowerCase);
+  };
 
   useEffect(() => {
-    console.log(club);
-    fetch(`http://localhost:3000/api/profile/club/athletes/${club._id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(api_url + "/api/profile/club/" + fpa_id)
       .then((response) => response.json())
       .then((json) => {
         setData(json);
         setLoading(false);
-      })
-      .catch((error) => console.error(error));
+      });
   }, []);
 
   return (
     <SafeAreaView>
-      <ScrollView>
-        <View className="px-12 mt-12 items-center">
-          <View className="flex-row justify-center mb-8">
-            <Image
-              source={require("../assets/profile_club.jpg")}
-              alt="profile"
-              className="w-56 h-56 rounded-xl object-cover"
-            />
-          </View>
-          <Text className="text-2xl font-semibold">{club.name}</Text>
+      {loading && (
+        <View className="flex-row justify-center items-center h-96">
+          <Text className="text-2xl font-semibold">Loading...</Text>
+        </View>
+      )}
+      {!loading && (
+        <ScrollView>
+          <View className="px-12 mt-12 items-center">
+            <View className="flex-row justify-center mb-8">
+              <Image
+                source={
+                  data.profile_pic === ""
+                    ? require("../assets/profile_club.jpg")
+                    : { uri: data.profile_pic }
+                }
+                alt="profile"
+                className="w-56 h-56 rounded-xl object-cover"
+              />
+            </View>
+            <Text className="text-2xl font-semibold">{data.name}</Text>
 
-          <View className="flex-row w-full justify-between font-semibold text-lg mt-8">
-            <Text className="text-xl">{club.association}</Text>
-            <Text className="text-xl">{club.acronym}</Text>
-          </View>
-          <View className="flex-row w-full justify-between items-center mt-12">
-            <Text className="text-lg">Athletes</Text>
-            <View className="flex-1 ml-8 flex-row space-x-2 text-xl bg-gray-200 p-2 rounded">
-              <MagnifyingGlassIcon color="#FE4862" />
-              <TextInput
-                onChangeText={(text) => loadData(text)}
-                placeholder="Search for athletes or clubs..."
-              ></TextInput>
+            <View className="flex-row w-full justify-between font-semibold text-lg mt-8">
+              <Text className="text-xl">{data.association}</Text>
+              <Text className="text-xl">{data.acronym}</Text>
+            </View>
+            <View className="flex-row mt-4 ">
+              <View className="flex-1 flex-row space-x-2 text-xl bg-gray-200 p-2 py-3 rounded w-full">
+                <MagnifyingGlassIcon color="#FE4862" />
+                <TextInput
+                  onChangeText={(text) => inputHandler(text)}
+                  placeholder="Search for competitions..."
+                ></TextInput>
+              </View>
             </View>
           </View>
-        </View>
-        <View className="flex-wrap flex-row justify-between pt-2">
-          {loading &&
-            loadingArray.map((athlete) => <AthleteCard key={athlete} />)}
-          {!loading &&
-            data.map((athlete) => (
-              <Text key={athlete._id}>{athlete.name}</Text>
+          <View className="flex-wrap flex-row justify-between mb-16 pt-6 px-10">
+            {filteredData.map((athlete) => (
+              <AthleteCard
+                key={athlete.fpa_id}
+                athlete={athlete}
+                club={data.acronym}
+              />
             ))}
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

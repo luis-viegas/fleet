@@ -4,6 +4,7 @@ import re
 
 import DB_access
 from Athlete import Athlete
+from Web_Browser import get_webpage
 
 class Competition:
     def __init__(self, name, round, startTime, level, gender, registered, startlist, results , event_id, event_name, id=None):
@@ -18,11 +19,15 @@ class Competition:
         self.event_id = event_id
         self.event_name = event_name
         self.id = id
+        self.competition_type = None
+
+
+
 
     def add_to_athletes(self, event_name):
         for serie in self.results:
             for result in serie:
-                DB_access.add_competition_to_athlete(result[0], event_name, result[1], result[2], self.event_id)
+                DB_access.add_competition_to_athlete(result[0], event_name, result[1], result[2], self.event_id, competition_id=self.id, competition_type=self.competition_type)
 
     @staticmethod
     def get_registered(id):
@@ -119,11 +124,25 @@ class Competition:
                 athlete_id = athlete.contents[5].contents[1].attrs['href'][14:]
                 position = athlete.contents[1].text
                 score = athlete.contents[11].text.strip()
-                serie_results.append([athlete_id, score, position])
+                type = athlete.find('td').text.strip()
+                serie_results.append([athlete_id, score, position, type])
             results.append(serie_results)
 
 
         return results
+
+    def set_competition_type(self):
+        try:
+            first_athlete = self.results[0][0][0]
+        except:
+            self.competition_type = "N/A"
+            return
+        page = get_webpage("perfilAtleta/"+first_athlete)
+
+        test = page.find('div', id='ultimas').find('a' , href="/"+ str(self.id) + "/resultados").parent.parent
+
+
+        self.competition_type = test.findAll('td')[0].text.strip()
 
 
     @staticmethod
@@ -133,5 +152,8 @@ class Competition:
         startlist = Competition.get_startlist(id)
         results = Competition.get_results(id)
 
-        return Competition(name,round,startTime,level,gender,sorted(registered,key= lambda e : e[1]),startlist,results,event_id, event_name, id)
+        competition = Competition(name,round,startTime,level,gender,sorted(registered,key= lambda e : e[1]),startlist,results,event_id, event_name, id)
+
+        competition.set_competition_type()
+        return competition
 

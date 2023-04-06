@@ -5,7 +5,7 @@ import time
 import random
 from Competition import Competition
 from Web_Browser import get_webpage
-
+from multiprocessing.pool import ThreadPool as Pool
 
 class Event:
     def __init__(self, fpa_id, name, date, location, association, picture, competitions=[], legacy=False):
@@ -35,6 +35,22 @@ class Event:
         return dateBegin, dateEnd
 
 
+    def parallel_aux_get_event_competitions(self, row, roundNumber, competitions):
+        competition_id = None if (row.find('a') == None) else row.find('a').attrs['href'].split('/')[2]
+        if competition_id == None:
+            return
+        competition_name = row.contents[3].text.split(' | ')[0].strip()
+        competition_round = roundNumber
+        competition_startTime = row.contents[1].text.strip()
+        competition_level = row.contents[5].text.strip()
+        competition_gender = 'Female' if (
+                row.contents[7].contents[1].attrs['class'][1].split('-')[1] == 'venus') else 'Male'
+        sleep_time = random.randint(1, 3)
+        time.sleep(sleep_time)
+        competition = Competition.from_fpa_url(competition_id, self.fpa_id, competition_name, competition_round,
+                                               competition_startTime, competition_level, competition_gender, self.name)
+        competitions.append(competition)
+
     def get_event_competitions(self):
 
         event_soup = get_webpage(f"{self.fpa_id}/competicao")
@@ -45,20 +61,13 @@ class Event:
         for table, round in zip(tables, rounds):
             rows = table.findAll('tr')[1:]
             roundNumber = round.text.strip().split(' ')[1]
+            pool = Pool(10)
             for row in rows:
-                competition_id = None if (row.find('a') == None) else row.find('a').attrs['href'].split('/')[2]
-                competition_name = row.contents[3].text.split(' | ')[0].strip()
-                competition_round = roundNumber
-                competition_startTime = row.contents[1].text.strip()
-                competition_level = row.contents[5].text.strip()
-                competition_gender = 'Female' if (
-                            row.contents[7].contents[1].attrs['class'][1].split('-')[1] == 'venus') else 'Male'
-                sleep_time = random.randint(1, 3)
-                time.sleep(sleep_time)
-                competition = Competition.from_fpa_url(competition_id, self.fpa_id, competition_name, competition_round,
-                                                       competition_startTime, competition_level, competition_gender, self.name)
-                competition.add_to_athletes(self.name)
-                competitions.append(competition)
+                pool.apply_async(self.parallel_aux_get_event_competitions, (row, roundNumber, competitions,))
+
+            pool.close()
+            pool.join()
+
 
         return competitions
 
@@ -78,6 +87,15 @@ class Event:
                     location = result.findAll('td')[5].text.strip()
                     return date, location
         return None, None
+
+    def replace_competitions_for_ids(self):
+        result = []
+        for competition in self.competitions:
+            try:
+                result.append(competition.id)
+            except:
+                result.append(competition['id'])
+        self.competitions = result
 
     @staticmethod
     def from_fpa_url(id):
