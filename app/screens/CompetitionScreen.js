@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   Touchable,
   TouchableOpacity,
@@ -10,6 +9,7 @@ import React, { useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Path, Svg } from "react-native-svg";
 import api_url from "../constants/api_url";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CompetitionScreen() {
   const {

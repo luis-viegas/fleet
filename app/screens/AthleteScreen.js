@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
   ScrollView,
   TouchableOpacity,
@@ -11,6 +10,7 @@ import React, { useEffect } from "react";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 import api_url from "../constants/api_url";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AthleteScreen() {
   const {

@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import React from "react";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -14,6 +8,7 @@ import API_URL from "../constants/api_url";
 import AthleteScreen from "./AthleteScreen";
 import EventScreen from "./EventScreen";
 import CompetitionScreen from "./CompetitionScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Stack = createStackNavigator();
 
@@ -80,7 +75,7 @@ function SearchPage() {
   };
 
   return (
-    <SafeAreaView className="">
+    <SafeAreaView>
       <View className="flex-row items-center pb-2 mx-4 mt-2 px-2">
         <View className="flex-1 flex-row space-x-2 bg-gray-200 p-3 rounded">
           <MagnifyingGlassIcon color="#FE4862" />

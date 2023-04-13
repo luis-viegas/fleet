@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   TextInput,
   Image,
   ScrollView,
@@ -12,6 +11,7 @@ import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 import { useRoute } from "@react-navigation/native";
 import api_url from "../constants/api_url";
 import AthleteCard from "../components/AthleteCard";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ClubScreen() {
   const {

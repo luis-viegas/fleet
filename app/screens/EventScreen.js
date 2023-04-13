@@ -1,14 +1,9 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React, { useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import api_url from "../constants/api_url";
 import { Path, Svg } from "react-native-svg";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventScreen() {
   const {
@@ -31,39 +26,37 @@ export default function EventScreen() {
     })();
   }, []);
   return (
-    <View>
+    <SafeAreaView>
       {loading ? (
         <Text>Loading...</Text>
       ) : (
-        <SafeAreaView>
-          <ScrollView>
-            <View className="items-center pb-16">
-              <Text className="text-4xl pt-6">{data.name}</Text>
-              <Text className="pt-2 text-lg">
-                {data.legacy
-                  ? data.dateBegin.split("T")[0].split("-")[1] +
-                    "-" +
-                    data.dateBegin.split("T")[0].split("-")[0]
-                  : data.dateBegin.split("T")[0]}
-              </Text>
-              <View className="flex-row justify-between w-full px-12 mt-8">
-                <Text className="text-xl">{data.association}</Text>
-                <Text className="text-xl">{data.location}</Text>
-              </View>
-              <View className="px-8 w-full">
-                {data.competitions &&
-                  data.competitions.map((competition_id) => (
-                    <CompetitionCard
-                      key={competition_id}
-                      competition_id={competition_id}
-                    />
-                  ))}
-              </View>
+        <ScrollView>
+          <View className="items-center pb-16">
+            <Text className="text-4xl pt-6">{data.name}</Text>
+            <Text className="pt-2 text-lg">
+              {data.legacy
+                ? data.dateBegin.split("T")[0].split("-")[1] +
+                  "-" +
+                  data.dateBegin.split("T")[0].split("-")[0]
+                : data.dateBegin.split("T")[0]}
+            </Text>
+            <View className="flex-row justify-between w-full px-12 mt-8">
+              <Text className="text-xl">{data.association}</Text>
+              <Text className="text-xl">{data.location}</Text>
             </View>
-          </ScrollView>
-        </SafeAreaView>
+            <View className="px-8 w-full">
+              {data.competitions &&
+                data.competitions.map((competition_id) => (
+                  <CompetitionCard
+                    key={competition_id}
+                    competition_id={competition_id}
+                  />
+                ))}
+            </View>
+          </View>
+        </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

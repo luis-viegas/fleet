@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
   TextInput,
   ScrollView,
@@ -9,63 +8,62 @@ import {
   Platform,
   StatusBar,
   TouchableOpacity,
+  Button,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useLayoutEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Path, Svg } from "react-native-svg";
 import api_url from "../constants/api_url";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ChevronDownIcon, ChevronUpIcon } from "react-native-heroicons/outline";
+import { createStackNavigator } from "@react-navigation/stack";
+import ClubScreen from "./ClubScreen";
+import AthleteScreen from "./AthleteScreen";
+import EventScreen from "./EventScreen";
+import CompetitionScreen from "./CompetitionScreen";
+
+const Stack = createStackNavigator();
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
-  const [recent, setRecent] = React.useState([]);
-  const [active, setActive] = React.useState([]);
-  const [upcoming, setUpcoming] = React.useState([]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, []);
-
-  useEffect(() => {
-    fetch(api_url + "/api/homepage/events/recent")
-      .then((response) => response.json())
-      .then((data) => {
-        setRecent(data);
-      });
-
-    fetch(api_url + "/api/homepage/events/active")
-      .then((response) => response.json())
-      .then((data) => {
-        setActive(data);
-      });
-
-    fetch(api_url + "/api/homepage/events/upcoming")
-      .then((response) => response.json())
-      .then((data) => {
-        setUpcoming(data);
-      });
-  }, []);
-
   return (
-    <SafeAreaView className="bg-gray-100 ">
-      <ScrollView>
-        <View className="pb-16">
-          <Text className="font-semibold text-2xl px-8 mt-8">
-            Welcome to Fleet!
-          </Text>
-          <View className="mt-4 px-8">
-            <EventsList title="Active" array={active} icon="active" />
-            <EventsList title="Recent" array={recent} icon="recent" />
-            <EventsList title="Upcoming" array={upcoming} icon="upcoming" />
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <Stack.Navigator initialRouteName="HomeScreenComponent">
+      <Stack.Screen
+        name="HomeScreenComponent"
+        component={HomeScreenComponent}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ClubScreen"
+        component={ClubScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AthleteScreen"
+        component={AthleteScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EventScreen"
+        component={EventScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CompetitionScreen"
+        component={CompetitionScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
 }
 
-function EventsList({ title, array, icon }) {
+function HomeScreenComponent() {
+  const navigation = useNavigation();
+
+  const [showRecent, setShowRecent] = React.useState(false);
+  const [showActive, setShowActive] = React.useState(false);
+  const [showUpcoming, setShowUpcoming] = React.useState(false);
+
   icons = {
     recent: (
       <Path
@@ -96,32 +94,159 @@ function EventsList({ title, array, icon }) {
       </>
     ),
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, []);
+
+  return (
+    <SafeAreaView className="bg-gray-100 ">
+      <ScrollView>
+        <View className="pb-16">
+          <Text className="font-semibold text-2xl px-8 mt-8">
+            Welcome to Fleet!
+          </Text>
+          <View className="mt-8 px-8">
+            <TouchableOpacity
+              className="flex-row justify-between mb-4 bg-[#FE4862] px-4 py-2 rounded-lg mt-2"
+              onPress={() => {
+                setShowActive(!showActive);
+              }}
+            >
+              <View className="flex-row">
+                <Text className="font-semibold text-xl text-white">
+                  Active events
+                </Text>
+                <View className="ml-2">
+                  <Svg
+                    className="w-6 h-6"
+                    viewBox="0 0 24 24"
+                    stroke="white" //"#FE4862"
+                    strokeWidth="2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {icons["active"]}
+                  </Svg>
+                </View>
+              </View>
+              {showActive ? (
+                <ChevronUpIcon size={26} color="white" />
+              ) : (
+                <ChevronDownIcon size={26} color="white" />
+              )}
+            </TouchableOpacity>
+            {showActive && (
+              <EventsList title="Active" icon="active" type="active" />
+            )}
+
+            <TouchableOpacity
+              className="flex-row justify-between mb-4 bg-[#FE4862] px-4 py-2 rounded-lg mt-2"
+              onPress={() => {
+                setShowRecent(!showRecent);
+              }}
+            >
+              <View className="flex-row">
+                <Text className="font-semibold text-xl text-white">
+                  Recent events
+                </Text>
+                <View className="ml-2">
+                  <Svg
+                    className="w-6 h-6"
+                    viewBox="0 0 24 24"
+                    stroke="white"
+                    strokeWidth="2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {icons["recent"]}
+                  </Svg>
+                </View>
+              </View>
+              {showRecent ? (
+                <ChevronUpIcon size={26} color="white" />
+              ) : (
+                <ChevronDownIcon size={26} color="white" />
+              )}
+            </TouchableOpacity>
+            {showRecent && (
+              <EventsList title="Recent" icon="recent" type="recent" />
+            )}
+            <TouchableOpacity
+              className="flex-row justify-between mb-4 bg-[#FE4862] px-4 py-2 rounded-lg mt-2"
+              onPress={() => {
+                setShowUpcoming(!showUpcoming);
+              }}
+            >
+              <View className="flex-row">
+                <Text className="font-semibold text-xl text-white">
+                  Upcoming events
+                </Text>
+                <View className="ml-2">
+                  <Svg
+                    className="w-6 h-6"
+                    viewBox="0 0 24 24"
+                    stroke="white"
+                    strokeWidth="2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {icons["upcoming"]}
+                  </Svg>
+                </View>
+              </View>
+              {showUpcoming ? (
+                <ChevronUpIcon size={26} color="white" />
+              ) : (
+                <ChevronDownIcon size={26} color="white" />
+              )}
+            </TouchableOpacity>
+            {showUpcoming && (
+              <EventsList title="Upcoming" icon="upcoming" type="upcoming" />
+            )}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function EventsList({ title, icon, type }) {
+  const [data, setData] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    fetch(api_url + `/api/homepage/events/${type}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <View className="flex-row justify-center items-center">
+        <ActivityIndicator size="large" color="#FE4862" />
+      </View>
+    );
+  }
+
   return (
     <View className="mb-6">
-      <View className="flex-row items-center mb-4">
-        <Text className="font-semibold text-xl">{title} events</Text>
-        <View className="ml-2">
-          <Svg
-            className="w-6 h-6"
-            viewBox="0 0 24 24"
-            stroke="#FE4862"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {icons[icon]}
-          </Svg>
-        </View>
-      </View>
       <View className="">
-        {array.map((event, index) => (
+        {data.map((event, index) => (
           <EventCard
             key={index.toString() + title + event.fpa_id.toString()}
             event={event}
           />
         ))}
-        {array.length == 0 && (
+        {data.length == 0 && (
           <Text className="text-lg">Currently there are no {title} events</Text>
         )}
       </View>
@@ -135,9 +260,7 @@ function EventCard({ event }) {
     <View className="mb-4">
       <TouchableOpacity
         onPress={() => {
-          navigation.push("EventScreen", {
-            event_id: event.fpa_id,
-          });
+          navigation.navigate("EventScreen", { event_id: event.fpa_id });
         }}
       >
         <View className="bg-white rounded-lg p-4 space-y-1 shadow shadow-sm">
