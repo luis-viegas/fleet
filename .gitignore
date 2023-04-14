@@ -3,3 +3,4 @@
 scrapper/.idea
 scrapper/__pycache__
 docs/
+.env
