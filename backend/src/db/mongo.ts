@@ -10,9 +10,17 @@ const options = {};
 
 const client = new MongoClient(uri, options);
 
-export function start_mongo() {
+export async function start_mongo() {
 	console.log('Starting mongo...');
-	return client.connect();
+	let result;
+	try {
+		// Connect to the MongoDB cluster
+		result = await client.connect();
+	
+	} catch (e) {
+		console.error(e);
+	}
+	return result;
 }
 
 export default client.db('Database');
