@@ -7,8 +7,8 @@ export async function GET() {
         .find(
             {
                 $and: [
-                    {dateBegin: { $gte: new Date(Date.now() - 12096e5) }},
-                    {dateBegin: { $lte: new Date() }},
+                    {dateEnd: { $gte: new Date(Date.now() - 12096e5) }},
+                    {dateEnd: { $lte: new Date() }},
                 ]
 
             },
@@ -16,6 +16,7 @@ export async function GET() {
                 limit: 20,
             }
         )
+        .sort({ dateBegin: -1 })
         .toArray();
 
     return json(eventsData);

@@ -231,7 +231,7 @@ function EventsList({ title, icon, type }) {
 
   if (loading) {
     return (
-      <View className="flex-row justify-center items-center">
+      <View className="flex-row justify-center items-center p-3">
         <ActivityIndicator size="large" color="#FE4862" />
       </View>
     );

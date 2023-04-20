@@ -26,6 +26,8 @@ export default function CompetitionScreen() {
       .then((response) => response.json())
       .then((json) => {
         setCompetition(json);
+        console.log(competition_id);
+        console.log(json);
         setLoading(false);
       });
   }, []);
@@ -51,10 +53,8 @@ export default function CompetitionScreen() {
                 <Text className="text-xl ">{competition.event_name}</Text>
               </View>
             </TouchableOpacity>
-            <View className="flex-row justify-between w-full items-baseline">
-              <Text className="text-4xl font-semibold">{competition.name}</Text>
-              <Text className="text-xl ">{competition.startTime}</Text>
-            </View>
+            <Text className="text-4xl font-semibold">{competition.name}</Text>
+            <Text className="text-xl ">{competition.startTime}</Text>
 
             <View className="flex-row justify-between items-center w-full px-4">
               <Text className="text-xl">{competition.level}</Text>

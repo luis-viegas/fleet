@@ -70,13 +70,29 @@ export default function AthleteScreen() {
               }
               alt="profile"
             />
-            <Text className="text-4xl font-semibold">{athleteObj.name}</Text>
+            <View className="items-center space-y-4 w-full px-12">
+              <Text className="text-4xl font-semibold">{athleteObj.name}</Text>
+              <View className="flex-row justify-between w-full items-baseline">
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("ClubScreen", {
+                      fpa_id: athleteObj.club_id,
+                    });
+                  }}
+                >
+                  <View className="bg-gray-200 px-3 py-1 rounded-lg shadow-sm">
+                    <Text className="text-2xl ">{athleteObj.club}</Text>
+                  </View>
+                </TouchableOpacity>
+                <Text className="text-xl">{athleteObj.nationality}</Text>
+              </View>
+            </View>
 
             <View className="flex-row justify-between w-full px-12">
               <Text className="text-xl">{athleteObj.level}</Text>
               <Text className="text-xl">{athleteObj.birth_year}</Text>
             </View>
-            <View className="flex-row px-5">
+            <View className="flex-row px-6">
               <View className="flex-1 flex-row space-x-2 text-xl bg-gray-200 p-2 py-3 rounded w-full">
                 <MagnifyingGlassIcon color="#FE4862" />
                 <TextInput
@@ -86,7 +102,7 @@ export default function AthleteScreen() {
               </View>
             </View>
 
-            <View className="px-4 space-y-4">
+            <View className="px-6 space-y-4 w-full">
               {filteredData &&
                 filteredData.map((competition) => (
                   <TouchableOpacity
@@ -99,7 +115,7 @@ export default function AthleteScreen() {
                       competition.competition_id.toString() + competition.score
                     }
                   >
-                    <View className="bg-white rounded-lg p-4 space-y-1 shadow shadow-sm">
+                    <View className="bg-white rounded-lg p-4 space-y-1 shadow shadow-sm w-full">
                       <Text className="text-lg">{competition.event_name}</Text>
                       <View className="flex-row justify-between pr-2">
                         <Text className="text-sm">

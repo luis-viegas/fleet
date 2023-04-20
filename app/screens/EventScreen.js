@@ -21,6 +21,8 @@ export default function EventScreen() {
         .then((response) => response.json())
         .then((json) => {
           setData(json);
+          console.log(event_id);
+          console.log(json);
           setLoading(false);
         });
     })();
@@ -79,7 +81,7 @@ function CompetitionCard({ competition_id }) {
     <TouchableOpacity
       onPress={() => {
         navigation.navigate("CompetitionScreen", {
-          competitionObj: competition,
+          competition_id: competition_id,
         });
       }}
     >

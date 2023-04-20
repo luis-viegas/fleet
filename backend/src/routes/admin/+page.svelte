@@ -46,10 +46,12 @@
 	{#if recent}
 		<div class={'grid grid-cols-4 gap-2 ' + (showRecent ? '' : 'hidden')}>
 			{#each recent as event}
-				<div class="border rounded bg-gray-50 hover:bg-gray-300 p-4">
-					<h1 class="font-semibold mb-2">{event.name}</h1>
-					<h1 class="text-sm">{event.location}</h1>
-				</div>
+				<a href={`/admin/event/${event.fpa_id}`}>
+					<div class="border rounded bg-gray-50 hover:bg-gray-300 p-4">
+						<h1 class="font-semibold mb-2">{event.name}</h1>
+						<h1 class="text-sm">{event.location}</h1>
+					</div>
+				</a>
 			{/each}
 		</div>
 	{/if}
@@ -65,10 +67,12 @@
 	{#if active}
 		<div class={'grid grid-cols-4 gap-2 ' + (showActive ? '' : 'hidden')}>
 			{#each active as event}
-				<div class="border rounded bg-gray-50 hover:bg-gray-300 p-4">
-					<h1 class="font-semibold mb-2">{event.name}</h1>
-					<h1 class="text-sm">{event.location}</h1>
-				</div>
+				<a href={`/admin/event/${event.fpa_id}`}>
+					<div class="border rounded bg-gray-50 hover:bg-gray-300 p-4">
+						<h1 class="font-semibold mb-2">{event.name}</h1>
+						<h1 class="text-sm">{event.location}</h1>
+					</div>
+				</a>
 			{/each}
 		</div>
 	{/if}
@@ -84,10 +88,12 @@
 	{#if upcoming}
 		<div class={'grid grid-cols-4 gap-2 ' + (showUpcoming ? '' : 'hidden')}>
 			{#each upcoming as event}
-				<div class="border rounded bg-gray-50 hover:bg-gray-300 p-4">
-					<h1 class="font-semibold mb-2">{event.name}</h1>
-					<h1 class="text-sm">{event.location}</h1>
-				</div>
+				<a href={`/admin/event/${event.fpa_id}`}>
+					<div class="border rounded bg-gray-50 hover:bg-gray-300 p-4">
+						<h1 class="font-semibold mb-2">{event.name}</h1>
+						<h1 class="text-sm">{event.location}</h1>
+					</div>
+				</a>
 			{/each}
 		</div>
 	{/if}

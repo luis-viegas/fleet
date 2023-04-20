@@ -63,7 +63,7 @@ def scrap_homepage_past(eventsDB, competitionsDB, athleteCompetitionsDB):
 def scrap_homepage_present(eventsDB, competitionsDB, athleteCompetitionsDB):
     soup = get_webpage("")
     present_events = soup.find('div', class_='d-flex justify-content-around flex-wrap')
-    if (present_events.parent.attrs['id'] == 'futuras'):
+    if(all(item in present_events.parent.attrs['class'] for item in ['collapse'])):
         print("Time to scrap present events: 0")
         return
     present_events = present_events.findAll('div', class_='card')
