@@ -36,7 +36,6 @@ export async function GET({ params }) {
 
 	  ]).toArray();
 
-	console.log(clubObj2[0]);
 
 	const data =  clubObj2[0];
 

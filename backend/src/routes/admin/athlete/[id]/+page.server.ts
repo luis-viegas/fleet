@@ -24,7 +24,6 @@ export const actions = {
 			}	
 			object[entry[0]] = entry[1];
 		}
-		console.log(object)
 
 		return
 		await athletes.updateOne(

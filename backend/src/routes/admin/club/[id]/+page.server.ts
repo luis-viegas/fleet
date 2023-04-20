@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 export const load = (async ({ fetch, params }) => {
   const clubInfo = await fetch(`/api/profile/club/${params.id}`);
   const club = await clubInfo.json();
+  console.log(club);
   return {club};
 }) satisfies PageLoad;
 

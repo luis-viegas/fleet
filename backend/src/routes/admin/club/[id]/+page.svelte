@@ -2,6 +2,7 @@
 	import AthleteCard from './AthleteCard.svelte';
 
 	export let data;
+	console.log(data);
 </script>
 
 <div class="flex justify-between">
@@ -34,14 +35,14 @@
 		</form>
 	</div>
 	<div class="w-1/2 text-sm ">
-		<h1 class="text-xl font-bold mb-4">Events:</h1>
+		<h1 class="text-xl font-bold mb-4">Athletes:</h1>
 		<div class="grid grid-cols-2 gap-4">
 			{#each data.club.athletes as athlete}
 				<a
 					class="inline-block  border p-6  hover:bg-gray-100 hover:cursor-pointer"
-					href="/admin/athlete/{athlete}"
+					href="/admin/athlete/{athlete.fpa_id}"
 				>
-					<AthleteCard id={athlete} />
+					<AthleteCard id={athlete.fpa_id} />
 				</a>
 			{/each}
 		</div>
