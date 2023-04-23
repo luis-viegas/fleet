@@ -13,7 +13,7 @@ export async function GET() {
 
             },
             {
-                limit: 20,
+                limit: 40,
             }
         ).sort({ dateBegin: 1 })
         .toArray();
