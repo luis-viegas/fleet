@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
@@ -58,6 +59,11 @@ export default function AthleteScreen() {
 
   return (
     <SafeAreaView className="">
+      {loading && (
+        <View className="justify-center items-center">
+          <ActivityIndicator size="large" color="#FE4862" />
+        </View>
+      )}
       {!loading && (
         <ScrollView>
           <View className="items-center space-y-6 pb-16">

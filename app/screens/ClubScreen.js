@@ -5,6 +5,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
@@ -48,8 +49,8 @@ export default function ClubScreen() {
   return (
     <SafeAreaView>
       {loading && (
-        <View className="flex-row justify-center items-center h-96">
-          <Text className="text-2xl font-semibold">Loading...</Text>
+        <View className="justify-center h-full items-center">
+          <ActivityIndicator size="large" color="#FE4862" />
         </View>
       )}
       {!loading && (

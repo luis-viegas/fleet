@@ -1,17 +1,20 @@
-from dotenv import load_dotenv
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv()
+from pymongo import MongoClient
 
-from mongodb import ClientMongoDB
 
 def main():
-    client = ClientMongoDB()
+    client = MongoClient(
+        "mongodb+srv://admin:bananasplit2023@cluster0.7wg412l.mongodb.net/?retryWrites=true&w=majority")
 
-    i=0
-    for club in client.get_clubs():
-        i = i + 1
-        # clubsDB.update_one({"fpa_id": club["fpa_id"]}, {"$set": {"profile_pic": ""}})
-        print(i)
-    return
+    clubsDB = client["Database"]["Clubs"]
+    athletesDB = client["Database"]["Athletes"]
+
+    ids = athletesDB.find({"club_id": 12})
+    for id in ids:
+        clubsDB.update_one({"name": "SPORTING C P"}, {"$push": {"athletes": str(id["fpa_id"])}}, upsert=True)
+
+
 
 if __name__ == "__main__":
     main()

@@ -16,7 +16,11 @@ import { useNavigation } from "@react-navigation/native";
 import { Path, Svg } from "react-native-svg";
 import api_url from "../constants/api_url";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronDownIcon, ChevronUpIcon } from "react-native-heroicons/outline";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  MagnifyingGlassIcon,
+} from "react-native-heroicons/outline";
 import { createStackNavigator } from "@react-navigation/stack";
 import ClubScreen from "./ClubScreen";
 import AthleteScreen from "./AthleteScreen";
@@ -219,6 +223,24 @@ function HomeScreenComponent() {
 function EventsList({ title, icon, type }) {
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [inputText, setInputText] = React.useState("");
+
+  const filteredData = data.filter((el) => {
+    if (inputText === "") {
+      return el;
+    } else {
+      return (
+        el.name.toLowerCase().includes(inputText) ||
+        el.location.toLowerCase().includes(inputText)
+      );
+    }
+  });
+
+  let inputHandler = (e) => {
+    //convert input text to lower case
+    var lowerCase = e.toLowerCase();
+    setInputText(lowerCase);
+  };
 
   useEffect(() => {
     fetch(api_url + `/api/homepage/events/${type}`)
@@ -239,8 +261,15 @@ function EventsList({ title, icon, type }) {
 
   return (
     <View className="mb-6">
+      <View className="flex-1 flex-row space-x-2 text-xl bg-gray-200 p-2 py-3 rounded w-full mb-4">
+        <MagnifyingGlassIcon color="#FE4862" />
+        <TextInput
+          onChangeText={(text) => inputHandler(text)}
+          placeholder="Search for events or location..."
+        ></TextInput>
+      </View>
       <View className="">
-        {data.map((event, index) => (
+        {filteredData.map((event, index) => (
           <EventCard
             key={index.toString() + title + event.fpa_id.toString()}
             event={event}
@@ -263,14 +292,18 @@ function EventCard({ event }) {
           navigation.navigate("EventScreen", { event_id: event.fpa_id });
         }}
       >
-        <View className="bg-white rounded-lg p-4 space-y-1 shadow shadow-sm">
+        <View className="bg-white rounded-lg p-5 space-y-1 shadow shadow-sm">
           <Text className="text-lg">{event.name}</Text>
           <Text className="pt-2 ">
             {event.legacy
               ? event.dateBegin.split("T")[0].split("-")[1] +
                 "-" +
                 event.dateBegin.split("T")[0].split("-")[0]
-              : event.dateBegin.split("T")[0]}
+              : event.dateBegin.split("T")[0] === event.dateEnd.split("T")[0]
+              ? event.dateBegin.split("T")[0]
+              : event.dateBegin.split("T")[0] +
+                " - " +
+                event.dateEnd.split("T")[0]}
           </Text>
           <View className="flex-row justify-between">
             <Text className="text-sm">{event.association}</Text>

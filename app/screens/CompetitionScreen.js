@@ -4,6 +4,7 @@ import {
   ScrollView,
   Touchable,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -26,8 +27,6 @@ export default function CompetitionScreen() {
       .then((response) => response.json())
       .then((json) => {
         setCompetition(json);
-        console.log(competition_id);
-        console.log(json);
         setLoading(false);
       });
   }, []);
@@ -39,9 +38,14 @@ export default function CompetitionScreen() {
 
   return (
     <SafeAreaView>
+      {loading && (
+        <View className="justify-center h-full items-center">
+          <ActivityIndicator size="large" color="#FE4862" />
+        </View>
+      )}
       <ScrollView>
         {!loading && (
-          <View className="items-center space-y-6 pb-16 pt-4 px-8">
+          <View className="items-center space-y-6 pb-24 pt-4 px-8">
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate("EventScreen", {
@@ -115,7 +119,11 @@ export default function CompetitionScreen() {
             >
               <Text className="font-semibold text-xl mb-4">Registered</Text>
               {competition.registered.map(([id, pb]) => (
-                <RegisteredCard key={"registered" + id} id={id} pb={pb} />
+                <RegisteredCard
+                  key={"registered" + id.toString()}
+                  id={id}
+                  pb={pb}
+                />
               ))}
             </View>
 
@@ -126,7 +134,7 @@ export default function CompetitionScreen() {
             >
               <Text className="font-semibold text-xl mb-4">Startlist</Text>
               {competition.startlist.map((array, index) => (
-                <View>
+                <View key={"startlist_serie" + index}>
                   <Text className="font-semibold text-xl mb-4">
                     Series {index + 1}
                   </Text>
@@ -142,7 +150,7 @@ export default function CompetitionScreen() {
             >
               <Text className="font-semibold text-xl mb-4">Results</Text>
               {competition.results.map((array, index) => (
-                <View>
+                <View key={"result_serie" + index}>
                   <Text className="font-semibold text-xl mb-4">
                     Series {index + 1}
                   </Text>

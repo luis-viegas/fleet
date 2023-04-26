@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import api_url from "../constants/api_url";
@@ -21,8 +27,6 @@ export default function EventScreen() {
         .then((response) => response.json())
         .then((json) => {
           setData(json);
-          console.log(event_id);
-          console.log(json);
           setLoading(false);
         });
     })();
@@ -30,11 +34,13 @@ export default function EventScreen() {
   return (
     <SafeAreaView>
       {loading ? (
-        <Text>Loading...</Text>
+        <View className="h-full justify-center items-center">
+          <ActivityIndicator size="large" color="#FE4862" />
+        </View>
       ) : (
         <ScrollView>
           <View className="items-center pb-16">
-            <Text className="text-4xl pt-6">{data.name}</Text>
+            <Text className="text-4xl pt-6 px-12 text-center">{data.name}</Text>
             <Text className="pt-2 text-lg">
               {data.legacy
                 ? data.dateBegin.split("T")[0].split("-")[1] +
@@ -86,6 +92,11 @@ function CompetitionCard({ competition_id }) {
       }}
     >
       <View className="bg-white w-full rounded-lg p-4 space-y-1 mt-4 shadow shadow-sm">
+        {loading && (
+          <View className="justify-center items-center">
+            <ActivityIndicator size="large" color="#FE4862" />
+          </View>
+        )}
         {!loading && (
           <>
             <View className="flex-row">
