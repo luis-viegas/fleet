@@ -5,12 +5,15 @@ import {
   Touchable,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Path, Svg } from "react-native-svg";
 import api_url from "../constants/api_url";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { selectLanguage } from "../language";
 
 export default function CompetitionScreen() {
   const {
@@ -19,8 +22,10 @@ export default function CompetitionScreen() {
   const [competition, setCompetition] = React.useState({});
   const [loading, setLoading] = React.useState(true);
   const [selected, setSelected] = React.useState("registered");
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const navigation = useNavigation();
+  const language = useSelector(selectLanguage);
 
   useEffect(() => {
     fetch(api_url + "/api/competition/" + competition_id)
@@ -28,6 +33,16 @@ export default function CompetitionScreen() {
       .then((json) => {
         setCompetition(json);
         setLoading(false);
+      });
+  }, []);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetch(api_url + "/api/competition/" + competition_id)
+      .then((response) => response.json())
+      .then((json) => {
+        setCompetition(json);
+        setRefreshing(false);
       });
   }, []);
 
@@ -43,7 +58,11 @@ export default function CompetitionScreen() {
           <ActivityIndicator size="large" color="#FE4862" />
         </View>
       )}
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {!loading && (
           <View className="items-center space-y-6 pb-24 pt-4 px-8">
             <TouchableOpacity
@@ -57,7 +76,9 @@ export default function CompetitionScreen() {
                 <Text className="text-xl ">{competition.event_name}</Text>
               </View>
             </TouchableOpacity>
-            <Text className="text-4xl font-semibold">{competition.name}</Text>
+            <Text className="text-4xl font-semibold text-center">
+              {competition.name}
+            </Text>
             <Text className="text-xl ">{competition.startTime}</Text>
 
             <View className="flex-row justify-between items-center w-full px-4">
@@ -80,7 +101,7 @@ export default function CompetitionScreen() {
                   <Text
                     className={selected === "registered" ? "text-white" : ""}
                   >
-                    Registered
+                    {language === "en" ? "Registered" : "Inscritos"}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -94,7 +115,7 @@ export default function CompetitionScreen() {
                   <Text
                     className={selected === "startlist" ? "text-white" : ""}
                   >
-                    Startlist
+                    {language === "en" ? "Startlist" : "Lista de Partida"}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -106,7 +127,7 @@ export default function CompetitionScreen() {
                   onPress={() => setSelected("results")}
                 >
                   <Text className={selected === "results" ? "text-white" : ""}>
-                    Results
+                    {language === "en" ? "Results" : "Resultados"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -117,7 +138,9 @@ export default function CompetitionScreen() {
                 "w-full " + (selected !== "registered" ? " hidden" : "")
               }
             >
-              <Text className="font-semibold text-xl mb-4">Registered</Text>
+              <Text className="font-semibold text-xl mb-4">
+                {language === "en" ? "Registered" : "Inscritos"}
+              </Text>
               {competition.registered.map(([id, pb]) => (
                 <RegisteredCard
                   key={"registered" + id.toString()}
@@ -125,6 +148,13 @@ export default function CompetitionScreen() {
                   pb={pb}
                 />
               ))}
+              {competition.registered.length === 0 && (
+                <Text>
+                  {language === "en"
+                    ? "No information available yet."
+                    : "Sem informação disponível."}
+                </Text>
+              )}
             </View>
 
             <View
@@ -132,27 +162,38 @@ export default function CompetitionScreen() {
                 "w-full " + (selected !== "startlist" ? " hidden" : "")
               }
             >
-              <Text className="font-semibold text-xl mb-4">Startlist</Text>
+              <Text className="font-semibold text-xl mb-4">
+                {language === "en" ? "Startlist" : "Lista de Partida"}
+              </Text>
               {competition.startlist.map((array, index) => (
                 <View key={"startlist_serie" + index}>
                   <Text className="font-semibold text-xl mb-4">
-                    Series {index + 1}
+                    {language === "en" ? "Series" : "Série"} {index + 1}
                   </Text>
                   {array.map(([id, lane]) => (
                     <StartlistCard key={"startlist" + id} id={id} lane={lane} />
                   ))}
                 </View>
               ))}
+              {competition.startlist.length === 0 && (
+                <Text>
+                  {language === "en"
+                    ? "No information available yet."
+                    : "Sem informação disponível."}
+                </Text>
+              )}
             </View>
 
             <View
               className={"w-full " + (selected !== "results" ? " hidden" : "")}
             >
-              <Text className="font-semibold text-xl mb-4">Results</Text>
+              <Text className="font-semibold text-xl mb-4">
+                {language === "en" ? "Results" : "Resultados"}
+              </Text>
               {competition.results.map((array, index) => (
                 <View key={"result_serie" + index}>
                   <Text className="font-semibold text-xl mb-4">
-                    Series {index + 1}
+                    {language === "en" ? "Series" : "Série"} {index + 1}
                   </Text>
                   {array.map(([id, result, position]) => (
                     <ResultsCard
@@ -164,6 +205,13 @@ export default function CompetitionScreen() {
                   ))}
                 </View>
               ))}
+              {competition.results.length === 0 && (
+                <Text>
+                  {language === "en"
+                    ? "No information available yet."
+                    : "Sem informação disponível."}
+                </Text>
+              )}
             </View>
           </View>
         )}
@@ -265,25 +313,33 @@ function ResultsCard({ id, result, position }) {
     setLoading(false);
   }, []);
 
+  const navigation = useNavigation();
+
   if (!loading && data?.name === undefined) return null;
 
   return (
-    <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
-      {loading ? (
-        <Text>Loading</Text>
-      ) : (
-        <View className="w-full flex-row justify-between">
-          <View>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.push("AthleteScreen", { fpa_id: data.fpa_id });
+      }}
+    >
+      <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
+        {loading ? (
+          <Text>Loading</Text>
+        ) : (
+          <View className="w-full flex-row justify-between">
+            <View>
+              <Text>
+                {data?.name} - {data?.club}
+              </Text>
+            </View>
             <Text>
-              {data?.name} - {data?.club}
+              {position}º - {result}
             </Text>
           </View>
-          <Text>
-            {position}º - {result}
-          </Text>
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -299,22 +355,33 @@ function StartlistCard({ id, lane }) {
     setLoading(false);
   }, []);
 
+  const navigation = useNavigation();
+  const language = useSelector(selectLanguage);
+
   if (!loading && data?.name === undefined) return null;
 
   return (
-    <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
-      {loading ? (
-        <Text>Loading</Text>
-      ) : (
-        <View className="w-full flex-row justify-between">
-          <View>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.push("AthleteScreen", { fpa_id: data.fpa_id });
+      }}
+    >
+      <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
+        {loading ? (
+          <Text>Loading</Text>
+        ) : (
+          <View className="w-full flex-row justify-between">
+            <View>
+              <Text>
+                {data?.name} - {data?.club}
+              </Text>
+            </View>
             <Text>
-              {data?.name} - {data?.club}
+              {language === "en" ? "Lane" : "Pista"} - {lane}
             </Text>
           </View>
-          <Text>Lane - {lane}</Text>
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 }

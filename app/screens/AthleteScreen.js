@@ -12,6 +12,8 @@ import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 import api_url from "../constants/api_url";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { selectLanguage } from "../language";
 
 export default function AthleteScreen() {
   const {
@@ -19,6 +21,7 @@ export default function AthleteScreen() {
   } = useRoute();
 
   const navigation = useNavigation();
+  const language = useSelector(selectLanguage);
 
   const [athleteObj, setAthleteObj] = React.useState({});
 
@@ -60,13 +63,13 @@ export default function AthleteScreen() {
   return (
     <SafeAreaView className="">
       {loading && (
-        <View className="justify-center items-center">
+        <View className="justify-center items-center pt-48">
           <ActivityIndicator size="large" color="#FE4862" />
         </View>
       )}
       {!loading && (
         <ScrollView>
-          <View className="items-center space-y-6 pb-16">
+          <View className="items-center space-y-6 pb-24">
             <Image
               className="rounded w-56 h-56 mt-6"
               source={
@@ -103,7 +106,11 @@ export default function AthleteScreen() {
                 <MagnifyingGlassIcon color="#FE4862" />
                 <TextInput
                   onChangeText={(text) => inputHandler(text)}
-                  placeholder="Search for competitions..."
+                  placeholder={
+                    language === "en"
+                      ? "Search for competitions..."
+                      : "Pesquisa por competições..."
+                  }
                 ></TextInput>
               </View>
             </View>
@@ -134,6 +141,14 @@ export default function AthleteScreen() {
                     </View>
                   </TouchableOpacity>
                 ))}
+
+              {filteredData.length === 0 && (
+                <Text className="text-center">
+                  {language === "en"
+                    ? "No competitions found"
+                    : "Nenhuma competição encontrada"}
+                </Text>
+              )}
             </View>
           </View>
         </ScrollView>

@@ -9,6 +9,9 @@ import AthleteScreen from "./AthleteScreen";
 import EventScreen from "./EventScreen";
 import CompetitionScreen from "./CompetitionScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { selectLanguage } from "../language";
+import { ScrollView } from "react-native-gesture-handler";
 
 const Stack = createStackNavigator();
 
@@ -49,6 +52,7 @@ function SearchPage() {
   const [selected, setSelected] = React.useState("clubs");
 
   const navigation = useNavigation();
+  const language = useSelector(selectLanguage);
 
   const loadData = (text) => {
     if (text === "") {
@@ -76,81 +80,91 @@ function SearchPage() {
 
   return (
     <SafeAreaView>
-      <View className="flex-row items-center pb-2 mx-4 mt-2 px-2">
-        <View className="flex-1 flex-row space-x-2 bg-gray-200 p-3 rounded">
-          <MagnifyingGlassIcon color="#FE4862" />
-          <TextInput
-            onChangeText={(text) => loadData(text)}
-            placeholder="Search for athletes or clubs..."
-          ></TextInput>
+      <ScrollView>
+        <View className="pb-24">
+          <View className="flex-row items-center pb-2 mx-4 mt-2 px-2">
+            <View className="flex-1 flex-row space-x-2 bg-gray-200 p-3 rounded">
+              <MagnifyingGlassIcon color="#FE4862" />
+              <TextInput
+                onChangeText={(text) => loadData(text)}
+                placeholder={
+                  language === "en"
+                    ? "Search for athletes or clubs..."
+                    : "Pesquisar por atletas ou clubes..."
+                }
+              ></TextInput>
+            </View>
+          </View>
+          <View className="flex-row justify-center mt-4">
+            <View className="flex-row justify-between w-[40%]">
+              <TouchableOpacity
+                className={` px-4 py-2 rounded ${
+                  buttonVariants[selected === "clubs" ? "active" : "inactive"]
+                }`}
+                onPress={() => setSelected("clubs")}
+              >
+                <Text className={selected === "clubs" ? "text-white" : ""}>
+                  {language === "en" ? "Clubs" : "Clubes"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={` px-4 py-2 rounded ${
+                  buttonVariants[
+                    selected === "athletes" ? "active" : "inactive"
+                  ]
+                }`}
+                onPress={() => setSelected("athletes")}
+              >
+                <Text className={selected === "athletes" ? "text-white" : ""}>
+                  {language === "en" ? "Athletes" : "Atletas"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View className="px-2">
+            {data.clubs?.length > 0 &&
+              selected === "clubs" &&
+              data.clubs.map((club) => (
+                <TouchableOpacity
+                  key={club.fpa_id}
+                  onPress={() => {
+                    navigation.navigate("ClubScreen", { fpa_id: club.fpa_id });
+                  }}
+                >
+                  <View className=" p-3 mx-4 mt-2 px-3 bg-white border border-gray-200 rounded-lg shadow">
+                    <Text className="text-base font-bold tracking-tight text-gray-900">
+                      {club.name}
+                    </Text>
+                    <Text className="font-normal text-sm text-gray-700">
+                      {club.association}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            {data.athletes?.length > 0 &&
+              selected === "athletes" &&
+              data.athletes.map((athlete) => (
+                <TouchableOpacity
+                  key={athlete.fpa_id}
+                  onPress={() => {
+                    navigation.navigate("AthleteScreen", {
+                      fpa_id: athlete.fpa_id,
+                    });
+                  }}
+                >
+                  <View className=" p-3 mx-4 mt-2 px-3 bg-white border border-gray-200 rounded-lg shadow">
+                    <Text className="text-base font-bold tracking-tight text-gray-900">
+                      {athlete.name}
+                    </Text>
+                    <Text className="font-normal text-sm text-gray-700">
+                      {athlete.club}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+          </View>
         </View>
-      </View>
-      <View className="flex-row justify-center mt-4">
-        <View className="flex-row justify-between w-[40%]">
-          <TouchableOpacity
-            className={` px-4 py-2 rounded ${
-              buttonVariants[selected === "clubs" ? "active" : "inactive"]
-            }`}
-            onPress={() => setSelected("clubs")}
-          >
-            <Text className={selected === "clubs" ? "text-white" : ""}>
-              Clubs
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={` px-4 py-2 rounded ${
-              buttonVariants[selected === "athletes" ? "active" : "inactive"]
-            }`}
-            onPress={() => setSelected("athletes")}
-          >
-            <Text className={selected === "athletes" ? "text-white" : ""}>
-              Athletes
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View className="px-2">
-        {data.clubs?.length > 0 &&
-          selected === "clubs" &&
-          data.clubs.map((club) => (
-            <TouchableOpacity
-              key={club.fpa_id}
-              onPress={() => {
-                navigation.navigate("ClubScreen", { fpa_id: club.fpa_id });
-              }}
-            >
-              <View className=" p-3 mx-4 mt-2 px-3 bg-white border border-gray-200 rounded-lg shadow">
-                <Text className="text-base font-bold tracking-tight text-gray-900">
-                  {club.name}
-                </Text>
-                <Text className="font-normal text-sm text-gray-700">
-                  {club.association}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        {data.athletes?.length > 0 &&
-          selected === "athletes" &&
-          data.athletes.map((athlete) => (
-            <TouchableOpacity
-              key={athlete.fpa_id}
-              onPress={() => {
-                navigation.navigate("AthleteScreen", {
-                  fpa_id: athlete.fpa_id,
-                });
-              }}
-            >
-              <View className=" p-3 mx-4 mt-2 px-3 bg-white border border-gray-200 rounded-lg shadow">
-                <Text className="text-base font-bold tracking-tight text-gray-900">
-                  {athlete.name}
-                </Text>
-                <Text className="font-normal text-sm text-gray-700">
-                  {athlete.club}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

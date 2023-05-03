@@ -4,12 +4,16 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import React, { useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import api_url from "../constants/api_url";
 import { Path, Svg } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
+import { useSelector } from "react-redux";
+import { selectLanguage } from "../language";
 
 export default function EventScreen() {
   const {
@@ -18,8 +22,17 @@ export default function EventScreen() {
 
   const navigation = useNavigation();
 
+  const language = useSelector(selectLanguage);
+
   const [data, setData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [inputText, setInputText] = React.useState("");
+
+  let inputHandler = (e) => {
+    //convert input text to lower case
+    var lowerCase = e.toLowerCase();
+    setInputText(lowerCase);
+  };
 
   useEffect(() => {
     (async () => {
@@ -39,7 +52,7 @@ export default function EventScreen() {
         </View>
       ) : (
         <ScrollView>
-          <View className="items-center pb-16">
+          <View className="items-center pb-24">
             <Text className="text-4xl pt-6 px-12 text-center">{data.name}</Text>
             <Text className="pt-2 text-lg">
               {data.legacy
@@ -52,12 +65,26 @@ export default function EventScreen() {
               <Text className="text-xl">{data.association}</Text>
               <Text className="text-xl">{data.location}</Text>
             </View>
+            <View className="w-full px-8 flex-1 mt-4">
+              <View className="flex-1 flex-row space-x-2 text-xl bg-gray-200 p-2 py-3 rounded w-full">
+                <MagnifyingGlassIcon color="#FE4862" />
+                <TextInput
+                  onChangeText={(text) => inputHandler(text)}
+                  placeholder={
+                    language === "en"
+                      ? "Search for competitions..."
+                      : "Pesquisar por competições..."
+                  }
+                ></TextInput>
+              </View>
+            </View>
             <View className="px-8 w-full">
               {data.competitions &&
-                data.competitions.map((competition_id) => (
+                data.competitions?.map((competition_id) => (
                   <CompetitionCard
                     key={competition_id}
                     competition_id={competition_id}
+                    inputText={inputText}
                   />
                 ))}
             </View>
@@ -68,7 +95,7 @@ export default function EventScreen() {
   );
 }
 
-function CompetitionCard({ competition_id }) {
+function CompetitionCard({ competition_id, inputText }) {
   const [competition, setCompetition] = React.useState({});
   const [loading, setLoading] = React.useState(true);
 
@@ -82,6 +109,21 @@ function CompetitionCard({ competition_id }) {
         setLoading(false);
       });
   }, []);
+
+  if (
+    inputText !== "" &&
+    !loading &&
+    !(
+      competition.name.toLowerCase().includes(inputText) ||
+      competition.competition_type.toLowerCase().includes(inputText)
+    )
+  ) {
+    return (
+      <View className="hidden">
+        <Text></Text>
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity

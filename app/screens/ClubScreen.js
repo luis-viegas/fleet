@@ -13,6 +13,8 @@ import { useRoute } from "@react-navigation/native";
 import api_url from "../constants/api_url";
 import AthleteCard from "../components/AthleteCard";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { selectLanguage } from "../language";
 
 export default function ClubScreen() {
   const {
@@ -22,6 +24,8 @@ export default function ClubScreen() {
   const [data, setData] = React.useState({ athletes: [] });
   const [loading, setLoading] = React.useState(true);
   const [inputText, setInputText] = React.useState("");
+
+  const language = useSelector(selectLanguage);
 
   const filteredData = data.athletes.filter((el) => {
     if (inputText === "") {
@@ -78,12 +82,16 @@ export default function ClubScreen() {
                 <MagnifyingGlassIcon color="#FE4862" />
                 <TextInput
                   onChangeText={(text) => inputHandler(text)}
-                  placeholder="Search for competitions..."
+                  placeholder={
+                    language === "en"
+                      ? "Search for athletes..."
+                      : "Procurar atletas..."
+                  }
                 ></TextInput>
               </View>
             </View>
           </View>
-          <View className="flex-wrap flex-row justify-between mb-16 pt-6 px-10">
+          <View className="flex-wrap flex-row justify-between mb-24 pt-6 px-10">
             {filteredData.map((athlete) => (
               <AthleteCard
                 key={athlete.fpa_id}

@@ -26,6 +26,8 @@ import ClubScreen from "./ClubScreen";
 import AthleteScreen from "./AthleteScreen";
 import EventScreen from "./EventScreen";
 import CompetitionScreen from "./CompetitionScreen";
+import { useSelector } from "react-redux";
+import { selectLanguage } from "../language";
 
 const Stack = createStackNavigator();
 
@@ -105,12 +107,14 @@ function HomeScreenComponent() {
     });
   }, []);
 
+  const language = useSelector(selectLanguage);
+
   return (
     <SafeAreaView className="bg-gray-100 ">
       <ScrollView>
-        <View className="pb-16">
+        <View className="pb-24">
           <Text className="font-semibold text-2xl px-8 mt-8">
-            Welcome to Fleet!
+            {language === "en" ? "Welcome to Fleet!" : "Bem Vindo à Fleet!"}
           </Text>
           <View className="mt-8 px-8">
             <TouchableOpacity
@@ -120,10 +124,7 @@ function HomeScreenComponent() {
               }}
             >
               <View className="flex-row">
-                <Text className="font-semibold text-xl text-white">
-                  Active events
-                </Text>
-                <View className="ml-2">
+                <View className="mr-2">
                   <Svg
                     className="w-6 h-6"
                     viewBox="0 0 24 24"
@@ -136,6 +137,9 @@ function HomeScreenComponent() {
                     {icons["active"]}
                   </Svg>
                 </View>
+                <Text className="font-semibold text-xl text-white">
+                  {language === "en" ? "Active events" : "Eventos Ativos"}
+                </Text>
               </View>
               {showActive ? (
                 <ChevronUpIcon size={26} color="white" />
@@ -154,10 +158,7 @@ function HomeScreenComponent() {
               }}
             >
               <View className="flex-row">
-                <Text className="font-semibold text-xl text-white">
-                  Recent events
-                </Text>
-                <View className="ml-2">
+                <View className="mr-2">
                   <Svg
                     className="w-6 h-6"
                     viewBox="0 0 24 24"
@@ -170,6 +171,9 @@ function HomeScreenComponent() {
                     {icons["recent"]}
                   </Svg>
                 </View>
+                <Text className="font-semibold text-xl text-white">
+                  {language === "en" ? "Recent events" : "Eventos Recentes"}
+                </Text>
               </View>
               {showRecent ? (
                 <ChevronUpIcon size={26} color="white" />
@@ -187,10 +191,7 @@ function HomeScreenComponent() {
               }}
             >
               <View className="flex-row">
-                <Text className="font-semibold text-xl text-white">
-                  Upcoming events
-                </Text>
-                <View className="ml-2">
+                <View className="mr-2">
                   <Svg
                     className="w-6 h-6"
                     viewBox="0 0 24 24"
@@ -203,6 +204,9 @@ function HomeScreenComponent() {
                     {icons["upcoming"]}
                   </Svg>
                 </View>
+                <Text className="font-semibold text-xl text-white">
+                  {language === "en" ? "Upcoming events" : "Próximos Eventos"}
+                </Text>
               </View>
               {showUpcoming ? (
                 <ChevronUpIcon size={26} color="white" />
@@ -224,6 +228,8 @@ function EventsList({ title, icon, type }) {
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [inputText, setInputText] = React.useState("");
+
+  const language = useSelector(selectLanguage);
 
   const filteredData = data.filter((el) => {
     if (inputText === "") {
@@ -265,7 +271,11 @@ function EventsList({ title, icon, type }) {
         <MagnifyingGlassIcon color="#FE4862" />
         <TextInput
           onChangeText={(text) => inputHandler(text)}
-          placeholder="Search for events or location..."
+          placeholder={
+            language === "en"
+              ? "Search for events or location..."
+              : "Pesquisar por eventos ou localizações..."
+          }
         ></TextInput>
       </View>
       <View className="">
@@ -276,7 +286,11 @@ function EventsList({ title, icon, type }) {
           />
         ))}
         {data.length == 0 && (
-          <Text className="text-lg">Currently there are no {title} events</Text>
+          <Text className="text-lg">
+            {language === "en"
+              ? `Currently there are no ${title} events`
+              : "De momento não há eventos para mostrar"}
+          </Text>
         )}
       </View>
     </View>
