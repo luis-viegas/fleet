@@ -12,7 +12,7 @@ export async function GET({ params }) {
 				]
 			},
 			{
-				limit: 6,
+				limit: 30,
 				projection: {
 					name: 1,
 					association: 1,
@@ -29,7 +29,7 @@ export async function GET({ params }) {
 		.find(
 			{ name: { $regex: params.searchTerm, $options: 'i' } },
 			{
-				limit: 6,
+				limit: 30,
 				projection: {
 					name: 1,
 					club: 1,
