@@ -25,7 +25,7 @@ export default function Tabs() {
   }, []);
 
   return (
-    <View style={{ width, height }}>
+    <View style={{ flex: 1 }}>
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({ route }) => ({

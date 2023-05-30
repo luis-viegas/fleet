@@ -15,6 +15,5 @@ export async function GET({ params }) {
 
 	const data = eventObj
 
-
 	return json(data);
 }

@@ -27,6 +27,10 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appName": "Fleet Atletismo"
+      }
+    }
   }
 }

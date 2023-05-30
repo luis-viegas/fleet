@@ -5,7 +5,6 @@ import { ObjectId } from 'mongodb';
 export const load = (async ({ fetch, params }) => {
   const clubInfo = await fetch(`/api/profile/club/${params.id}`);
   const club = await clubInfo.json();
-  //console.log(club);
   return {club};
 }) satisfies PageLoad;
 
@@ -15,11 +14,10 @@ export const actions = {
     
         const data = await request.formData();
 
-        console.log(data);
+        
         
 
 
-        console.log('updating');
 		let object = {};
 		const keyValue = data.get('key');
 		const value = data.get('value');
@@ -30,7 +28,6 @@ export const actions = {
             { fpa_id: Number(data.get('id')) },
 			{ $set: object },
         ); 
-        console.log(result);
         return
         /*
 

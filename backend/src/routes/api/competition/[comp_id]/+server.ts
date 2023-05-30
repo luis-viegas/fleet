@@ -9,6 +9,8 @@ export async function GET({ params }) {
 
 	const data = compObj
 
+	
+
 
 	return json(data);
 }

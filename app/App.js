@@ -8,12 +8,14 @@ import { useEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store";
 import { switchLanguage } from "./language";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
   return (
     <NavigationContainer>
       <Provider store={store}>
         <SafeAreaProvider>
+          <StatusBar style="dark" />
           <Tabs />
         </SafeAreaProvider>
       </Provider>

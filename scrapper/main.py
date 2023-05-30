@@ -3,6 +3,8 @@
 from pymongo import MongoClient
 
 from Athlete import Athlete
+from CurrentScrapper import past_paralelization_event_aux
+from Event import Event
 
 
 def main():
@@ -12,35 +14,21 @@ def main():
     clubsDB = client["Database"]["Clubs"]
     athletesDB = client["Database"]["Athletes"]
     athleteCompetitionsDB = client["Database"]["AthleteCompetitions"]
+    eventsDB = client["Database"]["Events"]
+    competitionsDB = client["Database"]["Competitions"]
 
-    def get_club_id(club_name):
-        club = clubsDB.find_one({"acronym": club_name})
-        if club:
-            return club["fpa_id"]
-        else:
-            return 0
+    #event = Event("2420", "Lousada | Campeonato Nacional de Clubes – Apuramento","2023/05/27 - 2023/05/28",  "Complexo Desportivo de Lousada", "AAP",  "https://ddjrr3j94g7u7.cloudfront.net/static/pics/FPA-competicoes_Campeonatos_Nacionais_de_Clubes_Lousada_42KwAbf.png")
 
+    event = Event("2403",
+                  "CAMPEONATOS REGIONAIS DE INICIADOS 2023",
+                  "2023/05/27 - 2023/05/28",
+                  "VENDAS NOVAS",
+                  "AAE",
+                  "https://ddjrr3j94g7u7.cloudfront.net/static/pics/AAE_rf9MFZj_EChtR90_hPkvUgS_UIOUDu5_VRLIqD3.png")
 
-    #176721
-    
-    for fpa_id in range(0, 176721):
-        fpa_athlete = Athlete.from_fpa_url(fpa_id)
-        # adicionar profile picture e competições e club id
-        if not fpa_athlete:
-            print("Athlete not found")
-        else:
-            if athletesDB.find_one({"fpa_id": str(fpa_id)}):
-                bad_code_practice = 1
-            else:
-                fpa_athlete.fpa_id = str(fpa_id)
-                fpa_athlete.profile_pic = ""
-                fpa_athlete.club_id = get_club_id(fpa_athlete.club)
-                athletesDB.insert_one(fpa_athlete.__dict__)
-                print("Athlete added to database")
+    a = 1
 
-                athleteCompetitionsDB.insert_one({"fpa_id": str(fpa_id), "competitions": []})
-                print("AthleteCompetitions added to database")
-
+    past_paralelization_event_aux(event, eventsDB, competitionsDB, athleteCompetitionsDB)
 
 
 

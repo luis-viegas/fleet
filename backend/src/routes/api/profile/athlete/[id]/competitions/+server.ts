@@ -7,7 +7,9 @@ export async function GET({ params }) {
 
 	);
 
-	const data = competitionsObj
+	let data = competitionsObj
+
+	data?.competitions.sort((a, b) => b.event_id - a.event_id);
 
 
 	return json(data);

@@ -50,6 +50,8 @@ export default function SearchScreen() {
 function SearchPage() {
   const [data, setData] = React.useState({ clubs: [], athletes: [] });
   const [selected, setSelected] = React.useState("clubs");
+  const [searchFlag, setSearchFlag] = React.useState(false);
+  const [inputText, setInputText] = React.useState("");
 
   const navigation = useNavigation();
   const language = useSelector(selectLanguage);
@@ -60,6 +62,21 @@ function SearchPage() {
       return;
     }
     fetch(`${API_URL}/api/search/${text}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        setData(json);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handleShowMore = () => {
+    fetch(`${API_URL}/api/searchMore/${inputText}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -86,7 +103,11 @@ function SearchPage() {
             <View className="flex-1 flex-row space-x-2 bg-gray-200 p-3 rounded">
               <MagnifyingGlassIcon color="#FE4862" />
               <TextInput
-                onChangeText={(text) => loadData(text)}
+                onChangeText={(text) => {
+                  setInputText(text);
+                  loadData(text);
+                  text !== "" ? setSearchFlag(true) : setSearchFlag(false);
+                }}
                 placeholder={
                   language === "en"
                     ? "Search for athletes or clubs..."
@@ -128,7 +149,7 @@ function SearchPage() {
                 <TouchableOpacity
                   key={club.fpa_id}
                   onPress={() => {
-                    navigation.navigate("ClubScreen", { fpa_id: club.fpa_id });
+                    navigation.push("ClubScreen", { fpa_id: club.fpa_id });
                   }}
                 >
                   <View className=" p-3 mx-4 mt-2 px-3 bg-white border border-gray-200 rounded-lg shadow">
@@ -147,7 +168,7 @@ function SearchPage() {
                 <TouchableOpacity
                   key={athlete.fpa_id}
                   onPress={() => {
-                    navigation.navigate("AthleteScreen", {
+                    navigation.push("AthleteScreen", {
                       fpa_id: athlete.fpa_id,
                     });
                   }}
@@ -163,6 +184,23 @@ function SearchPage() {
                 </TouchableOpacity>
               ))}
           </View>
+          {searchFlag &&
+            ((selected === "clubs" && data.clubs.length !== 0) ||
+              (selected === "athletes" && data.athletes.length !== 0)) && (
+              <View className="justify-center mt-2">
+                <TouchableOpacity
+                  className="px-4 py-2 rounded bg-gray-200 w-1/2 mx-auto mt-4"
+                  onPress={() => {
+                    handleShowMore();
+                    setSearchFlag(false);
+                  }}
+                >
+                  <Text className="text-center">
+                    {language === "en" ? "show more..." : "mostrar mais..."}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
         </View>
       </ScrollView>
     </SafeAreaView>

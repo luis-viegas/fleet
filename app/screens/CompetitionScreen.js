@@ -67,7 +67,7 @@ export default function CompetitionScreen() {
           <View className="items-center space-y-6 pb-24 pt-4 px-8">
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("EventScreen", {
+                navigation.push("EventScreen", {
                   event_id: competition.event_id,
                 });
               }}
@@ -143,7 +143,7 @@ export default function CompetitionScreen() {
               </Text>
               {competition.registered.map(([id, pb]) => (
                 <RegisteredCard
-                  key={"registered" + id.toString()}
+                  key={"registered" + id.toString() + pb.toString()}
                   id={id}
                   pb={pb}
                 />
@@ -263,8 +263,14 @@ function GenderIcon({ gender }) {
 function RegisteredCard({ id, pb }) {
   const [data, setData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
-
+  const [isValidProfile, setIsValidProfile] = React.useState(true);
   useEffect(() => {
+    if (id.startsWith("NOT_ID-")) {
+      setData({ name: id.substring(7), club: "" });
+      setLoading(false);
+      setIsValidProfile(false);
+      return;
+    }
     fetch(api_url + "/api/profile/athlete/" + id)
       .then((response) => response.json())
       .then((json) => {
@@ -276,6 +282,23 @@ function RegisteredCard({ id, pb }) {
   const navigation = useNavigation();
 
   if (!loading && data?.name === undefined) return null;
+
+  if (!isValidProfile) {
+    return (
+      <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
+        {loading ? (
+          <Text>Loading</Text>
+        ) : (
+          <View className="w-full flex-row justify-between">
+            <View>
+              <Text>{data?.name}</Text>
+            </View>
+            <Text>{pb}</Text>
+          </View>
+        )}
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity
@@ -304,7 +327,14 @@ function RegisteredCard({ id, pb }) {
 function ResultsCard({ id, result, position }) {
   const [data, setData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [isValidProfile, setIsValidProfile] = React.useState(true);
   useEffect(() => {
+    if (id.startsWith("NOT_ID-")) {
+      setData({ name: id.substring(7), club: "" });
+      setLoading(false);
+      setIsValidProfile(false);
+      return;
+    }
     fetch(api_url + "/api/profile/athlete/" + id)
       .then((response) => response.json())
       .then((json) => {
@@ -316,6 +346,25 @@ function ResultsCard({ id, result, position }) {
   const navigation = useNavigation();
 
   if (!loading && data?.name === undefined) return null;
+
+  if (!isValidProfile) {
+    return (
+      <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
+        {loading ? (
+          <Text>Loading</Text>
+        ) : (
+          <View className="w-full flex-row justify-between">
+            <View>
+              <Text>{data?.name}</Text>
+            </View>
+            <Text>
+              {position}º - {result}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity
@@ -346,7 +395,14 @@ function ResultsCard({ id, result, position }) {
 function StartlistCard({ id, lane }) {
   const [data, setData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [isValidProfile, setIsValidProfile] = React.useState(true);
   useEffect(() => {
+    if (id.startsWith("NOT_ID-")) {
+      setData({ name: id.substring(7), club: "" });
+      setLoading(false);
+      setIsValidProfile(false);
+      return;
+    }
     fetch(api_url + "/api/profile/athlete/" + id)
       .then((response) => response.json())
       .then((json) => {
@@ -359,6 +415,25 @@ function StartlistCard({ id, lane }) {
   const language = useSelector(selectLanguage);
 
   if (!loading && data?.name === undefined) return null;
+
+  if (!isValidProfile) {
+    return (
+      <View className="bg-white rounded-lg px-4 py-5 space-y-1 w-full shadow shadow-sm mb-4">
+        {loading ? (
+          <Text>Loading</Text>
+        ) : (
+          <View className="w-full flex-row justify-between">
+            <View>
+              <Text>{data?.name}</Text>
+            </View>
+            <Text>
+              {language === "en" ? "Lane" : "Pista"} - {lane}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity

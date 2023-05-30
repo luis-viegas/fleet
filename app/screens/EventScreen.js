@@ -11,7 +11,11 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import api_url from "../constants/api_url";
 import { Path, Svg } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
+import {
+  HomeIcon,
+  MagnifyingGlassIcon,
+  MapPinIcon,
+} from "react-native-heroicons/outline";
 import { useSelector } from "react-redux";
 import { selectLanguage } from "../language";
 
@@ -52,19 +56,25 @@ export default function EventScreen() {
         </View>
       ) : (
         <ScrollView>
-          <View className="items-center pb-24">
+          <View className="pb-24">
             <Text className="text-4xl pt-6 px-12 text-center">{data.name}</Text>
-            <Text className="pt-2 text-lg">
+            <Text className="pt-2 text-lg text-center">
               {data.legacy
                 ? data.dateBegin.split("T")[0].split("-")[1] +
                   "-" +
                   data.dateBegin.split("T")[0].split("-")[0]
                 : data.dateBegin.split("T")[0]}
             </Text>
-            <View className="flex-row justify-between w-full px-12 mt-8">
-              <Text className="text-xl">{data.association}</Text>
-              <Text className="text-xl">{data.location}</Text>
-            </View>
+            <Text className="text-xl ml-8 mt-10">
+              <HomeIcon color="#FE4862" size={18} />
+              {"  "}
+              {data.association}
+            </Text>
+            <Text className="text-xl ml-8">
+              <MapPinIcon color="#FE4862" size={18} />
+              {"  "}
+              {data.location}
+            </Text>
             <View className="w-full px-8 flex-1 mt-4">
               <View className="flex-1 flex-row space-x-2 text-xl bg-gray-200 p-2 py-3 rounded w-full">
                 <MagnifyingGlassIcon color="#FE4862" />
@@ -114,8 +124,8 @@ function CompetitionCard({ competition_id, inputText }) {
     inputText !== "" &&
     !loading &&
     !(
-      competition.name.toLowerCase().includes(inputText) ||
-      competition.competition_type.toLowerCase().includes(inputText)
+      competition.name?.toLowerCase().includes(inputText) ||
+      competition.competition_type?.toLowerCase().includes(inputText)
     )
   ) {
     return (
@@ -128,7 +138,7 @@ function CompetitionCard({ competition_id, inputText }) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("CompetitionScreen", {
+        navigation.push("CompetitionScreen", {
           competition_id: competition_id,
         });
       }}

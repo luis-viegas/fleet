@@ -57,6 +57,7 @@ export default function AthleteScreen() {
       .then((response) => response.json())
       .then((json) => {
         setData(json);
+        console.log(json);
       });
   }, []);
 
@@ -84,7 +85,7 @@ export default function AthleteScreen() {
               <View className="flex-row justify-between w-full items-baseline">
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate("ClubScreen", {
+                    navigation.push("ClubScreen", {
                       fpa_id: athleteObj.club_id,
                     });
                   }}
@@ -142,7 +143,7 @@ export default function AthleteScreen() {
                   </TouchableOpacity>
                 ))}
 
-              {filteredData.length === 0 && (
+              {filteredData && filteredData.length === 0 && (
                 <Text className="text-center">
                   {language === "en"
                     ? "No competitions found"

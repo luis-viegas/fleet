@@ -10,7 +10,7 @@ export default function AthleteClubCard({ athlete }) {
       <TouchableOpacity
         className="w-full h-full items-center pt-4"
         onPress={() => {
-          navigation.navigate("AthleteScreen", { athlete });
+          navigation.push("AthleteScreen", { athlete });
         }}
       >
         <Image

@@ -103,12 +103,15 @@ def past_paralelization_event_aux(event, eventsDB, competitionsDB, athleteCompet
             pool.close()
             pool.join()
     event.replace_competitions_for_ids()
+    a = 0
     eventsDB.update_one({"fpa_id": event.fpa_id}, {"$set": event.__dict__}, upsert=True)
 
 
 
 def process_competition_results_aux(event, athleteCompetitionsDB, competition, athlete_array):
     athlete_id = athlete_array[0]
+    if athlete_id.startswith("NOT_ID-"):
+        return
     athlete_score = athlete_array[1]
     athlete_position = athlete_array[2]
     competition_result_obj = {"event_name": event.name, "event_id": event.fpa_id, "score": athlete_score,

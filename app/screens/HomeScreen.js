@@ -110,7 +110,7 @@ function HomeScreenComponent() {
   const language = useSelector(selectLanguage);
 
   return (
-    <SafeAreaView className="bg-gray-100 ">
+    <SafeAreaView className="">
       <ScrollView>
         <View className="pb-24">
           <Text className="font-semibold text-2xl px-8 mt-8">
@@ -303,7 +303,7 @@ function EventCard({ event }) {
     <View className="mb-4">
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("EventScreen", { event_id: event.fpa_id });
+          navigation.push("EventScreen", { event_id: event.fpa_id });
         }}
       >
         <View className="bg-white rounded-lg p-5 space-y-1 shadow shadow-sm">

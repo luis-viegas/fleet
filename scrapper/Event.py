@@ -39,12 +39,12 @@ class Event:
         competition_id = None if (row.find('a') == None) else row.find('a').attrs['href'].split('/')[2]
         if competition_id == None:
             return
-        competition_name = row.contents[3].text.split(' | ')[0].strip()
+        competition_name = row.contents[5].text.split(' | ')[0].strip()
         competition_round = roundNumber
-        competition_startTime = row.contents[1].text.strip()
-        competition_level = row.contents[5].text.strip()
+        competition_startTime = row.contents[3].text.strip()
+        competition_level = row.contents[7].text.strip()
         competition_gender = 'Female' if (
-                row.contents[7].contents[1].attrs['class'][1].split('-')[1] == 'venus') else 'Male'
+                row.contents[9].contents[1].attrs['class'][1].split('-')[1] == 'venus') else 'Male'
         sleep_time = random.randint(1, 3)
         time.sleep(sleep_time)
         competition = Competition.from_fpa_url(competition_id, self.fpa_id, competition_name, competition_round,

@@ -52,7 +52,11 @@ class Competition:
         registered = []
         for athlete in registered_athletes:
             if len(athlete.contents[1].contents) == 1:
+                pb = athlete.contents[5].text
+                athlete_name = athlete.contents[1].contents[0].text.strip()
+                registered.append(["NOT_ID-" + athlete_name, pb])
                 continue
+
             athlete_id = athlete.contents[1].contents[1].attrs['href'][14:]
             pb = athlete.contents[5].text
             registered.append([athlete_id, pb])
@@ -85,6 +89,9 @@ class Competition:
             serie_startlist = []
             for athlete in serie:
                 if len(athlete.contents[5].contents) == 1:
+                    athlete_name = athlete.contents[5].contents[0].text.strip()
+                    track = athlete.contents[1].text
+                    serie_startlist.append(["NOT_ID-" + athlete_name, track])
                     continue
                 athlete_id = athlete.contents[5].contents[1].attrs['href'][14:]
                 track = athlete.contents[1].text
@@ -119,13 +126,39 @@ class Competition:
             serie = series.findAll('tr')[1:]
             serie_results = []
             for athlete in serie:
+                '''
                 if len(athlete.contents[5].contents) == 1:
+                    text = []
+                    for td in athlete.findAll('td'):
+                        if td.get('style') != 'display:none;':
+                            text.append(td.get_text(strip=True))
+                    position, number, athlete_name, club, level, score = text
+
+                    
                     continue
-                athlete_id = athlete.contents[5].contents[1].attrs['href'][14:]
-                position = athlete.contents[1].text
-                score = athlete.contents[11].text.strip()
-                type = athlete.find('td').text.strip()
-                serie_results.append([athlete_id, score, position, type])
+                '''
+                flag_id = False
+                text = []
+                for td in athlete.findAll('td'):
+                    if len(text) == 6:
+                        break
+                    if td.get('style') != 'display:none;':
+                        if td.find('a'):
+                            match = re.search(r'\/(\d+)$', td.find('a')['href'])
+                            flag_id = True
+                            if match:
+                                number = match.group(1)
+                                text.append(number)
+                        else:
+                            text.append(td.get_text(strip=True))
+                if  flag_id:
+                    position, number, athlete_id, club, level, score = text
+                    serie_results.append([athlete_id, score, position])
+                else:
+                    position, number, athlete_name, club, level, score = text
+                    serie_results.append(["NOT_ID-" + athlete_name, score, position])
+                debug = 0
+
             results.append(serie_results)
 
 
@@ -134,12 +167,16 @@ class Competition:
     def set_competition_type(self):
         try:
             first_athlete = self.results[0][0][0]
+            test = int(first_athlete)
         except:
             self.competition_type = "N/A"
             return
         page = get_webpage("perfilAtleta/"+first_athlete)
 
-        test = page.find('div', id='ultimas').find('a' , href="/"+ str(self.id) + "/resultados").parent.parent
+        test = page.find('div', id='last')
+        test= test.find('a' , href="/"+ str(self.id) + "/resultados")
+        test= test.parent
+        test= test.parent
 
 
         self.competition_type = test.findAll('td')[0].text.strip()
