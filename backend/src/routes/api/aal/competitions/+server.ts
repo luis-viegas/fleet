@@ -7,7 +7,7 @@ const  AAL_Multiplier = 1000000
 function prepareEvent(event) {
 
     event.competitions = event.competitions.map((comp) => {
-        return comp.id * AAL_Multiplier
+        return (comp.id * AAL_Multiplier).toString()
     })
     event.association = "AAL"
     event.fpa_id = event.id * AAL_Multiplier
@@ -20,7 +20,7 @@ function prepareEvent(event) {
 }
 
 function prepareCompetition(comp, event_id, event_name) {
-    comp.id = comp.id * AAL_Multiplier
+    comp.id = (comp.id * AAL_Multiplier).toString()
     comp.id = comp.id.toString()
     comp.event_id = event_id.toString()
     comp.event_name = event_name
