@@ -11,8 +11,8 @@ export async function POST({request}) {
     return new Response(authResult.body, { status: authResult.status });
   }
 
-  const {results , id} = await request.json()
-  competitionsDB.updateOne({"id": (id*AAL_Multiplier).toString()},{$set: {"results": results}}, {upsert: true})
+  const {startlist , id} = await request.json()
+  competitionsDB.updateOne({"id": (id*AAL_Multiplier).toString()},{$set: {"startlist": startlist}}, {upsert: true})
 
   return new Response('Hello AAL!', { status: 200 });
 }
